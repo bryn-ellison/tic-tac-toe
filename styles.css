@@ -3,4 +3,23 @@ body {
     align-items: center;
     justify-content: center;
     font-family: Arial, Helvetica, sans-serif;
+    flex-direction: column;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 600px;
+    height: 600px;
+    
+}
+
+.grid-square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    font-size: 6rem;
+    width: 200px;
+    height: 200px;
 }
