@@ -1,12 +1,9 @@
 //module to create gameboard
 
 const gameboard = (() => {
-  let board = ["", "", "", "", "", "", "", "", ""];
-  // const resetBoard = () => {
-  //   console.log("RESET");
-  //   gameboard.board = board.map((element) => "");
-  //   console.log(board);
-  // };
+  const newBoard = () => {
+    return ["", "", "", "", "", "", "", "", ""];
+  };
   const allEqual = (arr) => {
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].every((val) => val === "X")) {
@@ -47,11 +44,10 @@ const gameboard = (() => {
       diagnols[1],
     ];
     if (allEqual(checkArr)) {
-      console.log("THERES A WIN");
       gamePlay.gameEnd("win");
     }
   };
-  return { board, winCheck };
+  return { newBoard, winCheck };
 })();
 
 // factory function to create players
@@ -65,14 +61,15 @@ const Player = (name) => {
 
 const displayController = (() => {
   const boardDisplay = document.querySelector("#board");
-  board = gameboard.board;
+  const boardContainer = document.querySelector("#board-container");
+  //board = thisBoard;
   let counter = -1;
   const removeAllChildNodes = (parent) => {
     while (parent.firstChild) {
       parent.removeChild(parent.firstChild);
     }
   };
-  const renderBoard = () => {
+  const renderBoard = (board) => {
     if (counter !== -1) {
       removeAllChildNodes(boardDisplay);
     }
@@ -83,26 +80,46 @@ const displayController = (() => {
       square.textContent = element;
       square.id = index;
       square.addEventListener("click", () => {
-        gamePlay.clickSquare(square.id);
+        gamePlay.clickSquare(square.id, board);
       });
       boardDisplay.appendChild(square);
     });
   };
-
-  return { renderBoard };
+  const showResult = (result) => {
+    removeAllChildNodes(boardContainer);
+    const resultMessage = document.createElement("div");
+    resultMessage.textContent = result;
+    resultMessage.id = "results";
+    boardContainer.appendChild(resultMessage);
+    resetBtn();
+  };
+  const resetBtn = () => {
+    const resetButton = document.createElement("button");
+    resetButton.textContent = "Play game";
+    resetButton.id = "reset-button";
+    resetButton.addEventListener("click", () => {
+      removeAllChildNodes(boardContainer);
+      boardContainer.appendChild(boardDisplay);
+      gamePlay.startGame();
+    });
+    boardContainer.appendChild(resetButton);
+  };
+  return { renderBoard, showResult };
 })();
 
 // module to play game
 
 const Game = () => {
   let gameCount = 0;
-  const gameName = `game${gameCount}`;
   const startGame = () => {
-    const gameName = gameboard.board;
-    displayController.renderBoard(gameName);
+    const newboard = gameboard.newBoard();
+    turns = 9;
+    displayController.renderBoard(newboard);
     const player1 = Player("Bryn");
     const player2 = Player("Computer");
+    return { player1, player2 };
   };
+
   let currentTurn = "player1";
   const changeTurn = () => {
     if (currentTurn === "player1") {
@@ -115,18 +132,19 @@ const Game = () => {
   const takeTurn = () => {
     turns -= 1;
   };
-  const clickSquare = (id) => {
-    if (gameboard.board[id] === "") {
+  const clickSquare = (id, board) => {
+    console.log(board);
+    if (board[id] === "") {
       if (currentTurn === "player1") {
-        gameboard.board[id] = "X";
+        board[id] = "X";
       } else if (currentTurn === "player2") {
-        gameboard.board[id] = "O";
+        board[id] = "O";
       }
-      displayController.renderBoard();
+      displayController.renderBoard(board);
+      gameboard.winCheck(board);
       changeTurn();
       takeTurn();
       gameProgress();
-      gameboard.winCheck(gameboard.board);
     } else {
       return null;
     }
@@ -139,9 +157,13 @@ const Game = () => {
   const gameEnd = (result) => {
     gameCount += 1;
     if (result === "draw") {
-      console.log("DRAW!!!");
+      displayController.showResult("Draw!");
     } else if (result === "win") {
-      console.log("WIN!");
+      if (currentTurn === "player1") {
+        displayController.showResult(`${startGame().player1.getName()} wins!`);
+      } else {
+        displayController.showResult(`${startGame().player2.getName()} wins!`);
+      }
     }
   };
 
@@ -151,9 +173,3 @@ const Game = () => {
 const gamePlay = Game();
 
 gamePlay.startGame();
-
-// start game > generate board object > generate player objects > render board
-
-// player1 takes first turn as X > X rendered in clicked div > total turns reduced > turn switched to player2
-
-// process continues until 3 Xs or Os in line or turns < 1

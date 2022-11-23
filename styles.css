@@ -6,12 +6,23 @@ body {
     flex-direction: column;
 }
 
+#board-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+    flex-direction: column;
+}
+
 #board {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     width: 600px;
     height: 600px;
-    
+}
+
+#results {
+    font-size: 4rem;
 }
 
 .grid-square {
