@@ -4,9 +4,28 @@ body {
     justify-content: center;
     font-family: Arial, Helvetica, sans-serif;
     flex-direction: column;
+    height: 100vh;
+}
+
+#game-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    flex-direction: column;
+    width: 800px;
+    height: 900px;
 }
 
 #board-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+    flex-direction: column;
+}
+
+#menu-container {
     display: flex;
     align-items: center;
     justify-content: center;

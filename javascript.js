@@ -62,7 +62,6 @@ const Player = (name) => {
 const displayController = (() => {
   const boardDisplay = document.querySelector("#board");
   const boardContainer = document.querySelector("#board-container");
-  //board = thisBoard;
   let counter = -1;
   const removeAllChildNodes = (parent) => {
     while (parent.firstChild) {
@@ -93,18 +92,48 @@ const displayController = (() => {
     boardContainer.appendChild(resultMessage);
     resetBtn();
   };
+  const gameReset = () => {
+    removeAllChildNodes(boardContainer);
+    boardContainer.appendChild(boardDisplay);
+    gamePlay.startGame();
+  };
   const resetBtn = () => {
     const resetButton = document.createElement("button");
     resetButton.textContent = "Play game";
     resetButton.id = "reset-button";
     resetButton.addEventListener("click", () => {
-      removeAllChildNodes(boardContainer);
-      boardContainer.appendChild(boardDisplay);
-      gamePlay.startGame();
+      gameReset();
     });
     boardContainer.appendChild(resetButton);
   };
-  return { renderBoard, showResult };
+  const menu = () => {
+    const menuContainer = document.createElement("div");
+    menuContainer.id = "menu-container";
+    const menuMessage = document.createElement("p");
+    menuMessage.textContent = "Warriors, enter your names:";
+    const form = document.createElement("form");
+    const player1Label = document.createElement("label");
+    player1Label.textContent = "X";
+    const player1Field = document.createElement("input");
+    const player2Label = document.createElement("label");
+    player2Label.textContent = "O";
+    const player2Field = document.createElement("input");
+    const submit = document.createElement("button");
+    submit.textContent = "FIGHT";
+    submit.addEventListener("click", () => {
+      player1 = Player(player1Field.value);
+      player2 = Player(player2Field.value);
+      gamePlay.startGame();
+    });
+    boardContainer.appendChild(menuContainer);
+    menuContainer.appendChild(menuMessage);
+    menuContainer.appendChild(player1Label);
+    menuContainer.appendChild(player1Field);
+    menuContainer.appendChild(player2Label);
+    menuContainer.appendChild(player2Field);
+    menuContainer.appendChild(submit);
+  };
+  return { renderBoard, showResult, menu };
 })();
 
 // module to play game
@@ -115,9 +144,6 @@ const Game = () => {
     const newboard = gameboard.newBoard();
     turns = 9;
     displayController.renderBoard(newboard);
-    const player1 = Player("Bryn");
-    const player2 = Player("Computer");
-    return { player1, player2 };
   };
 
   let currentTurn = "player1";
@@ -133,7 +159,6 @@ const Game = () => {
     turns -= 1;
   };
   const clickSquare = (id, board) => {
-    console.log(board);
     if (board[id] === "") {
       if (currentTurn === "player1") {
         board[id] = "X";
@@ -160,9 +185,9 @@ const Game = () => {
       displayController.showResult("Draw!");
     } else if (result === "win") {
       if (currentTurn === "player1") {
-        displayController.showResult(`${startGame().player1.getName()} wins!`);
+        displayController.showResult(`${player1.getName()} wins!`);
       } else {
-        displayController.showResult(`${startGame().player2.getName()} wins!`);
+        displayController.showResult(`${player2.getName()} wins!`);
       }
     }
   };
@@ -170,6 +195,9 @@ const Game = () => {
   return { startGame, clickSquare, gameEnd };
 };
 
+let player1 = "";
+let player2 = "";
+
 const gamePlay = Game();
 
-gamePlay.startGame();
+displayController.menu();
